@@ -156,7 +156,8 @@ var { withAuth } = (0, import_auth.createAuth)({
   initFirstItem: {
     // если в базе данных нет элементов, настроив это поле
     // // вы просите пользовательский интерфейс администратора Keystone создать нового пользователя
-    // предоставление входных данных для этих полей
+    // предоставление входных данных для этих полей 
+    // aboba
     fields: ["name", "email", "password"]
     // it uses context.sudo() to do this, which bypasses any access control you might have
     //   you shouldn't use this in production
