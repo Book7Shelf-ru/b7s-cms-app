@@ -1,50 +1,50 @@
-// Welcome to some authentication for Keystone
+// Добро пожаловать на некоторую аутентификацию для Keystone
 //
-// This is using @keystone-6/auth to add the following
-// - A sign-in page for your Admin UI
-// - A cookie-based stateless session strategy
-//    - Using a User email as the identifier
-//    - 30 day cookie expiration
+// Это использует @keystone-6/auth для добавления следующего
+// - Страница входа в ваш пользовательский интерфейс администратора
+// - Стратегия сеанса без сохранения состояния на основе файлов cookie
+// - Использование электронной почты пользователя в качестве идентификатора
+// - срок действия файлов cookie составляет 30 дней
 //
-// This file does not configure what Users can do, and the default for this starter
-// project is to allow anyone - logged-in or not - to do anything.
+// Этот файл не настраивает то, что могут делать пользователи, и по умолчанию для этого стартера
+// project предназначен для того, чтобы позволить любому - вошедшему в систему или нет - что-либо делать.
 //
-// If you want to prevent random people on the internet from accessing your data,
-// you can find out how by reading https://keystonejs.com/docs/guides/auth-and-access-control
+// Если вы хотите предотвратить доступ случайных людей в Интернете к вашим данным,
+// вы можете узнать, как это сделать, прочитав https://keystonejs.com/docs/guides/auth-and-access-control
 //
-// If you want to learn more about how our out-of-the-box authentication works, please
-// read https://keystonejs.com/docs/apis/auth#authentication-api
+// Если вы хотите узнать больше о том, как работает наша готовая аутентификация, пожалуйста
+// читать https://keystonejs.com/docs/apis/auth#authentication-api
 
 import { randomBytes } from 'crypto';
 import { createAuth } from '@keystone-6/auth';
 
-// see https://keystonejs.com/docs/apis/session for the session docs
+// видишь https://keystonejs.com/docs/apis/session для документов сеанса
 import { statelessSessions } from '@keystone-6/core/session';
 
-// for a stateless session, a SESSION_SECRET should always be provided
-//   especially in production (statelessSessions will throw if SESSION_SECRET is undefined)
+// для сеанса без состояния всегда следует предоставлять SESSION_SECRET
+// особенно в рабочей среде (сеансы без сохранения состояния будут выданы, если значение SESSION_SECRET не определено)
 let sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret && process.env.NODE_ENV !== 'production') {
   sessionSecret = randomBytes(32).toString('hex');
 }
 
-// withAuth is a function we can use to wrap our base configuration
+// without - это функция, которую мы можем использовать для переноса нашей базовой конфигурации
 const { withAuth } = createAuth({
   listKey: 'User',
   identityField: 'email',
 
-  // this is a GraphQL query fragment for fetching what data will be attached to a context.session
-  //   this can be helpful for when you are writing your access control functions
-  //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
+// это фрагмент запроса GraphQL для извлечения того, какие данные будут прикреплены к context.session
+  // это может быть полезно, когда вы пишете свои функции контроля доступа
+  // вы можете узнать больше по адресу https://keystonejs.com/docs/guides/auth-and-access-control
   sessionData: 'name createdAt',
   secretField: 'password',
 
-  // WARNING: remove initFirstItem functionality in production
-  //   see https://keystonejs.com/docs/config/auth#init-first-item for more
+// // ПРЕДУПРЕЖДЕНИЕ: удалите функциональность первого элемента инициализации в рабочей среде
+  // посмотреть https://keystonejs.com/docs/config/auth#init-first-item для большего
   initFirstItem: {
-    // if there are no items in the database, by configuring this field
-    //   you are asking the Keystone AdminUI to create a new user
-    //   providing inputs for these fields
+// если в базе данных нет элементов, настроив это поле
+    // // вы просите пользовательский интерфейс администратора Keystone создать нового пользователя
+    // предоставление входных данных для этих полей
     fields: ['name', 'email', 'password'],
 
     // it uses context.sudo() to do this, which bypasses any access control you might have
@@ -52,12 +52,12 @@ const { withAuth } = createAuth({
   },
 });
 
-// statelessSessions uses cookies for session tracking
-//   these cookies have an expiry, in seconds
-//   we use an expiry of 30 days for this starter
+// сеансы без сохранения состояния используют файлы cookie для отслеживания сеансов
+// срок действия этих файлов cookie исчисляется секундами
+// срок годности этой закваски истекает через 30 дней
 const sessionMaxAge = 60 * 60 * 24 * 30;
 
-// you can find out more at https://keystonejs.com/docs/apis/session#session-api
+// вы можете узнать больше на https://keystonejs.com/docs/apis/session#session-api
 const session = statelessSessions({
   maxAge: sessionMaxAge,
   secret: sessionSecret!,
